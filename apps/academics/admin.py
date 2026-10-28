@@ -24,6 +24,7 @@ class SectionAdmin(admin.ModelAdmin):
 
     list_display = ['semester', 'name', 'shift']
     list_filter = ['semester__department', 'shift']
+    search_fields = ['semester__department__code', 'name']
     ordering = ['semester', 'name']
 
 

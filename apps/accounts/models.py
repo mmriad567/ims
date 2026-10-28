@@ -41,7 +41,55 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         """Normalize the email to lowercase before saving."""
-        # Lowercase outside the manager too, so case cannot bypass uniqueness.
         if self.email:
             self.email = self.email.lower()
         super().save(*args, **kwargs)
+
+
+class StudentProfile(models.Model):
+    """Academic profile linked to a student user."""
+
+    user = models.OneToOneField(
+        'accounts.User', on_delete=models.CASCADE, related_name='student_profile'
+    )
+    roll_no = models.CharField(max_length=20, unique=True)
+    registration_no = models.CharField(max_length=20, unique=True)
+    section = models.ForeignKey(
+        'academics.Section', on_delete=models.PROTECT, related_name='students'
+    )
+    session = models.CharField(max_length=9)
+    phone = models.CharField(max_length=15, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['roll_no']
+
+    def __str__(self):
+        return f"{self.roll_no} - {self.user.full_name}"
+
+
+class TeacherProfile(models.Model):
+    """Academic profile linked to a teacher user."""
+
+    class Designation(models.TextChoices):
+        """Designations available to a teacher."""
+
+        INSTRUCTOR = 'instructor', 'Instructor'
+        JUNIOR_INSTRUCTOR = 'junior_instructor', 'Junior Instructor'
+        LECTURER = 'lecturer', 'Lecturer'
+        CHIEF_INSTRUCTOR = 'chief_instructor', 'Chief Instructor'
+
+    user = models.OneToOneField(
+        'accounts.User', on_delete=models.CASCADE, related_name='teacher_profile'
+    )
+    department = models.ForeignKey(
+        'academics.Department', on_delete=models.PROTECT, related_name='teachers'
+    )
+    designation = models.CharField(max_length=30, choices=Designation.choices)
+    phone = models.CharField(max_length=15, blank=True)
+
+    class Meta:
+        ordering = ['user__full_name']
+
+    def __str__(self):
+        return f"{self.user.full_name} ({self.get_designation_display()})"

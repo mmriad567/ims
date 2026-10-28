@@ -2,6 +2,10 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
 from django.test import TestCase
 
+from apps.academics.models import Department, Section, Semester, Subject
+
+from .models import StudentProfile, TeacherProfile
+
 User = get_user_model()
 
 
@@ -70,3 +74,83 @@ class UserManagerTests(TestCase):
         )
         found = User.objects.get_by_natural_key('NATURAL@EXAMPLE.COM')
         self.assertEqual(found.pk, user.pk)
+
+
+class ProfileTest(TestCase):
+    """Tests for student and teacher profiles and subject assignment."""
+
+    def setUp(self):
+        """Create shared users and academic data."""
+
+        self.user_student = User.objects.create_user(
+            email='s@x.com', full_name='Stu Dent', role='student', password='x'
+        )
+        self.user_teacher = User.objects.create_user(
+            email='t@x.com', full_name='Tea Cher', role='teacher', password='x'
+        )
+        self.dept = Department.objects.create(code='CMT', name='Computer')
+        self.sem = Semester.objects.create(number=6, department=self.dept)
+        self.section = Section.objects.create(
+            name='A', semester=self.sem, shift='1st'
+        )
+
+    def test_student_profile_creates(self):
+        """A student profile is persisted with its academic details."""
+
+        StudentProfile.objects.create(
+            user=self.user_student,
+            roll_no='R001',
+            registration_no='G001',
+            section=self.section,
+            session='2022-2023',
+        )
+        self.assertTrue(StudentProfile.objects.filter(roll_no='R001').exists())
+
+    def test_student_roll_unique(self):
+        """Duplicate roll numbers raise IntegrityError."""
+
+        StudentProfile.objects.create(
+            user=self.user_student,
+            roll_no='R001',
+            registration_no='G001',
+            section=self.section,
+            session='2022-2023',
+        )
+        other = User.objects.create_user(
+            email='s2@x.com', full_name='Other Stu', role='student', password='x'
+        )
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                StudentProfile.objects.create(
+                    user=other,
+                    roll_no='R001',
+                    registration_no='G002',
+                    section=self.section,
+                    session='2022-2023',
+                )
+
+    def test_teacher_profile_creates(self):
+        """A teacher profile is persisted for the teacher user."""
+
+        teacher = TeacherProfile.objects.create(
+            user=self.user_teacher, department=self.dept, designation='instructor'
+        )
+        self.assertTrue(TeacherProfile.objects.filter(pk=teacher.pk).exists())
+
+    def test_teacher_str_shows_designation(self):
+        """Teacher profile string includes the designation label."""
+
+        teacher = TeacherProfile.objects.create(
+            user=self.user_teacher, department=self.dept, designation='instructor'
+        )
+        self.assertIn('Instructor', str(teacher))
+
+    def test_subject_m2m_with_teacher(self):
+        """A teacher assigned to a subject appears in its teachers set."""
+
+        teacher = TeacherProfile.objects.create(
+            user=self.user_teacher, department=self.dept, designation='instructor'
+        )
+        subject = Subject.objects.create(code='CMT101', name='Test', semester=self.sem)
+        subject.teachers.add(teacher)
+        self.assertIn(teacher, subject.teachers.all())

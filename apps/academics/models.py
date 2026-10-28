@@ -65,6 +65,11 @@ class Subject(models.Model):
         choices=[('theory', 'Theory'), ('practical', 'Practical')],
         default='theory',
     )
+    teachers = models.ManyToManyField(
+        'accounts.TeacherProfile',
+        blank=True,
+        related_name='subjects',
+    )
 
     class Meta:
         ordering = ['code']
