@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Create Session{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Create Session — {{ subject.code }}: {{ subject.name }}</h1>
+<div class="bg-white p-6 rounded shadow max-w-lg">
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+        <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            {{ form.non_field_errors }}
+        </div>
+        {% endif %}
+        {% for field in form.visible_fields %}
+        <div class="mb-4">
+            <label for="{{ field.id_for_label }}" class="block font-medium mb-1">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+            <p class="text-red-600 text-sm mt-1">{{ field.errors }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <div class="flex items-center gap-4">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Create Session</button>
+            <a href="{% url 'attendance:subject_list' %}" class="text-blue-600 underline">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

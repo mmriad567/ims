@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}My Subjects{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">My Subjects</h1>
+{% if subjects %}
+<table class="table-auto w-full bg-white rounded shadow">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="px-4 py-2 text-left">Code</th>
+            <th class="px-4 py-2 text-left">Name</th>
+            <th class="px-4 py-2 text-left">Semester</th>
+            <th class="px-4 py-2 text-left">Sections</th>
+            <th class="px-4 py-2 text-left">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subject in subjects %}
+        <tr class="border-t">
+            <td class="px-4 py-2">{{ subject.code }}</td>
+            <td class="px-4 py-2">{{ subject.name }}</td>
+            <td class="px-4 py-2">{{ subject.semester }}</td>
+            <td class="px-4 py-2">{% for section in subject.semester.sections.all %}{{ section.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+            <td class="px-4 py-2">
+                <a href="{% url 'attendance:session_create' subject.id %}" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Create Session</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="bg-white p-6 rounded shadow">You have no subjects assigned. Contact admin.</p>
+{% endif %}
+{% endblock %}

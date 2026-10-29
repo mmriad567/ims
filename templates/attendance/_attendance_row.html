@@ -1,0 +1,21 @@
+<tr id="att-{{ att.id }}">
+    <td class="px-4 py-2">{{ att.student.roll_no }}</td>
+    <td class="px-4 py-2">{{ att.student.user.full_name }}</td>
+    <td class="px-4 py-2">
+        <button hx-post="{% url 'attendance:toggle' att.id %}"
+                hx-vals='{"status":"present"}'
+                hx-target="#att-{{ att.id }}"
+                hx-swap="outerHTML"
+                class="{% if att.status == 'present' %}bg-green-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %} px-3 py-1 rounded text-sm mr-1">Present</button>
+        <button hx-post="{% url 'attendance:toggle' att.id %}"
+                hx-vals='{"status":"late"}'
+                hx-target="#att-{{ att.id }}"
+                hx-swap="outerHTML"
+                class="{% if att.status == 'late' %}bg-yellow-500 text-white{% else %}bg-gray-200 text-gray-700{% endif %} px-3 py-1 rounded text-sm mr-1">Late</button>
+        <button hx-post="{% url 'attendance:toggle' att.id %}"
+                hx-vals='{"status":"absent"}'
+                hx-target="#att-{{ att.id }}"
+                hx-swap="outerHTML"
+                class="{% if att.status == 'absent' %}bg-red-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %} px-3 py-1 rounded text-sm">Absent</button>
+    </td>
+</tr>
