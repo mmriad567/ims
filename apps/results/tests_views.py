@@ -111,3 +111,11 @@ class ResultViewsTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.exam.name)
+
+    def test_student_can_download_result_pdf(self):
+        """The student must receive a valid PDF result transcript."""
+        self.client.login(username='student@example.com', password='test123')
+        response = self.client.get(reverse('results:my_result_pdf'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(response.content.startswith(b'%PDF'))

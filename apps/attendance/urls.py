@@ -10,4 +10,5 @@ urlpatterns = [
     path('teacher/attendance/<int:attendance_id>/toggle/', views.toggle_attendance, name='toggle'),
     path('student/attendance/', views.my_attendance, name='my_attendance'),
     path('student/attendance/<int:subject_id>/', views.my_attendance_detail, name='my_attendance_detail'),
+    path('student/attendance/<int:subject_id>/pdf/', views.my_attendance_pdf, name='my_attendance_pdf'),
 ]

@@ -17,4 +17,5 @@ urlpatterns = [
         views.my_result_detail,
         name='my_result_detail',
     ),
+    path('student/result/pdf/', views.my_result_pdf, name='my_result_pdf'),
 ]

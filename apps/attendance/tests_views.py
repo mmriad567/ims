@@ -150,3 +150,13 @@ class AttendanceViewsTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.session.date.strftime('%Y-%m-%d'))
+
+    def test_student_can_download_attendance_pdf(self):
+        """The student must receive a valid PDF attendance report."""
+        self.client.login(username='student@example.com', password='test123')
+        response = self.client.get(
+            reverse('attendance:my_attendance_pdf', args=[self.subject.id])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(response.content.startswith(b'%PDF'))

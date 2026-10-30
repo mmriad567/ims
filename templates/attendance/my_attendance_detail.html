@@ -12,6 +12,7 @@
         <div><p class="text-gray-500 text-sm">Absent</p><p class="text-xl font-bold">{{ summary.absent }}</p></div>
         <div><p class="text-gray-500 text-sm">Percentage</p><p class="text-3xl font-bold {% if summary.percentage >= 75 %}text-green-600{% elif summary.percentage >= 60 %}text-yellow-600{% else %}text-red-600{% endif %}">{{ summary.percentage }}%</p></div>
     </div>
+    <a href="{% url 'attendance:my_attendance_pdf' subject.id %}" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 inline-block mt-4">Download PDF</a>
 </div>
 <table class="table-auto w-full bg-white rounded shadow">
     <thead class="bg-gray-200">

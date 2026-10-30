@@ -2,7 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ValidationError
 from django.views.decorators.http import require_POST
+from django.http import HttpResponse
+from io import BytesIO
 
+from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf
 from apps.core.decorators import role_required
 from apps.academics.models import Subject
 from .models import ClassSession, Attendance
@@ -108,3 +111,37 @@ def my_attendance_detail(request, subject_id):
     return render(request, 'attendance/my_attendance_detail.html', {
         'subject': subject, 'attendances': attendances, 'summary': summary,
     })
+
+
+@login_required
+@role_required('student')
+def my_attendance_pdf(request, subject_id):
+    """Generate and return a PDF of the student's attendance for a specific subject."""
+    student = request.user.student_profile
+    subject = get_object_or_404(Subject, id=subject_id, semester=student.section.semester)
+    attendances = Attendance.objects.filter(student=student, session__subject=subject).select_related('session').order_by('session__date', 'session__period_no')
+    summary = calculate_attendance_summary(student, subject)
+
+    buffer = BytesIO()
+    story = get_base_pdf_story(
+        "Bangladesh Polytechnic Institute",
+        [
+            f"Attendance Report: {subject.code} - {subject.name}",
+            f"Student: {student.user.full_name} | Roll: {student.roll_no}",
+            f"Section: {student.section} | Overall Percentage: {summary['percentage']}%"
+        ]
+    )
+
+    table_data = [["Date", "Period", "Status"]]
+    for att in attendances:
+        table_data.append([str(att.session.date), str(att.session.period_no), att.get_status_display()])
+
+    story.append(get_styled_table(table_data))
+    add_footer_to_story(story)
+    build_pdf(buffer, story)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="attendance_{subject.code}_{student.roll_no}.pdf"'
+    return response

@@ -2,7 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import modelformset_factory
 from django import forms
+from django.http import HttpResponse
+from io import BytesIO
 
+from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf
 from apps.core.decorators import role_required
 from apps.academics.models import Subject
 from apps.accounts.models import StudentProfile
@@ -101,3 +104,37 @@ def my_result_detail(request, subject_id):
     return render(request, 'results/my_result_detail.html', {
         'student': student, 'subject': subject, 'result': subject_result,
     })
+
+
+@login_required
+@role_required('student')
+def my_result_pdf(request):
+    """Generate and return a PDF transcript of the student's overall result."""
+    student = request.user.student_profile
+    result = calculate_overall_result(student)
+
+    buffer = BytesIO()
+    story = get_base_pdf_story(
+        "Bangladesh Polytechnic Institute",
+        [
+            "Overall Result Transcript",
+            f"Student: {student.user.full_name} | Roll: {student.roll_no}",
+            f"Overall GPA: {result['overall_gpa'] if result['overall_gpa'] is not None else 'Not Published'}"
+        ]
+    )
+
+    table_data = [["Subject Code", "Subject Name", "GPA", "Status"]]
+    for subj_res in result['subjects']:
+        gpa = subj_res['gpa'] if subj_res['gpa'] is not None else '-'
+        status = "Passed" if not subj_res['has_fail'] and subj_res['gpa'] is not None else ("Failed" if subj_res['has_fail'] else "Pending")
+        table_data.append([subj_res['subject'].code, subj_res['subject'].name, str(gpa), status])
+
+    story.append(get_styled_table(table_data))
+    add_footer_to_story(story)
+    build_pdf(buffer, story)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="result_{student.roll_no}.pdf"'
+    return response
