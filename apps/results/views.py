@@ -5,6 +5,7 @@ from django import forms
 from django.http import HttpResponse
 from django.contrib import messages
 from io import BytesIO
+from reportlab.lib.units import mm
 
 from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, build_pdf
 from apps.core.decorators import role_required
@@ -131,8 +132,8 @@ def my_result_pdf(request):
         status = "Passed" if not subj_res['has_fail'] and subj_res['gpa'] is not None else ("Failed" if subj_res['has_fail'] else "Pending")
         table_data.append([subj_res['subject'].code, subj_res['subject'].name, str(gpa), status])
 
-    story.append(get_styled_table(table_data))
-    build_pdf(buffer, story, signature_labels=("Class Teacher", "Controller of Exams"))
+    story.append(get_styled_table(table_data, col_widths=[45*mm, 85*mm, 25*mm, 25*mm]))
+    build_pdf(buffer, story, signature_labels=("Class Teacher", "Head of Department"))
 
     pdf = buffer.getvalue()
     buffer.close()

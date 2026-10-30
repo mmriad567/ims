@@ -1,34 +1,47 @@
 {% extends "base.html" %}
 
 {% block title %}My Attendance{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-2">My Attendance</h1>
-<p class="mb-4">{{ student.roll_no }} — {{ student.user.full_name }}</p>
-<table class="table-auto w-full bg-white rounded shadow">
-    <thead class="bg-gray-200">
-        <tr>
-            <th class="px-4 py-2 text-left">Subject Code</th>
-            <th class="px-4 py-2 text-left">Subject Name</th>
-            <th class="px-4 py-2 text-left">Total</th>
-            <th class="px-4 py-2 text-left">Present</th>
-            <th class="px-4 py-2 text-left">Late</th>
-            <th class="px-4 py-2 text-left">Absent</th>
-            <th class="px-4 py-2 text-left">Percentage</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for summary in summaries %}
-        <tr class="border-t">
-            <td class="px-4 py-2"><a href="{% url 'attendance:my_attendance_detail' summary.subject.id %}" class="text-blue-600 underline">{{ summary.subject.code }}</a></td>
-            <td class="px-4 py-2">{{ summary.subject.name }}</td>
-            <td class="px-4 py-2">{{ summary.total }}</td>
-            <td class="px-4 py-2">{{ summary.present }}</td>
-            <td class="px-4 py-2">{{ summary.late }}</td>
-            <td class="px-4 py-2">{{ summary.absent }}</td>
-            <td class="px-4 py-2 font-semibold {% if summary.percentage >= 75 %}text-green-600{% elif summary.percentage >= 60 %}text-yellow-600{% else %}text-red-600{% endif %}">{{ summary.percentage }}%</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-slate-800">My Attendance</h1>
+    <p class="text-slate-500 mt-1">{{ student.roll_no }} — {{ student.user.full_name }}</p>
+</div>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <table class="w-full table-auto">
+        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+            <tr>
+                <th class="px-6 py-3 text-left">Subject Code</th>
+                <th class="px-6 py-3 text-left">Subject Name</th>
+                <th class="px-6 py-3 text-left">Total</th>
+                <th class="px-6 py-3 text-left">Present</th>
+                <th class="px-6 py-3 text-left">Late</th>
+                <th class="px-6 py-3 text-left">Absent</th>
+                <th class="px-6 py-3 text-left">Percentage</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+            {% for summary in summaries %}
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><a href="{% url 'attendance:my_attendance_detail' summary.subject.id %}" class="text-blue-600 hover:underline">{{ summary.subject.code }}</a></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.subject.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.total }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.present }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.late }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.absent }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {% if summary.percentage >= 75 %}
+                        <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-medium">{{ summary.percentage }}%</span>
+                    {% elif summary.percentage >= 60 %}
+                        <span class="bg-yellow-100 text-yellow-800 px-2.5 py-0.5 rounded-full text-xs font-medium">{{ summary.percentage }}%</span>
+                    {% else %}
+                        <span class="bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full text-xs font-medium">{{ summary.percentage }}%</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

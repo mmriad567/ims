@@ -28,16 +28,16 @@ def get_base_pdf_story(title_text, subtitle_texts):
     return story
 
 
-def get_styled_table(data, col_widths=None):
-    """Return a Table with professional styling (clean borders, good padding)."""
+def get_styled_table(data, col_widths=None, header_bg_color='#0f172a'):
+    """Return a Table with modern horizontal-only borders and a configurable header color."""
     table = Table(data, repeatRows=1, colWidths=col_widths)
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a8a')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor(header_bg_color)),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+        ('LINEBELOW', (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f8fafc')]),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('TOPPADDING', (0, 0), (-1, -1), 8),
@@ -54,8 +54,8 @@ def add_footer_to_story(story):
     story.append(Paragraph(f"Generated on {timestamp}", styles['footer']))
 
 
-def build_pdf(buffer, story, signature_labels=None):
-    """Build the PDF and optionally draw signatures at the bottom of every page."""
+def build_pdf(buffer, story, signature_labels=None, header_bg_color='#0f172a'):
+    """Build the PDF with optional signatures and a configurable table header color."""
     doc = SimpleDocTemplate(
         buffer, pagesize=A4,
         leftMargin=15*mm, rightMargin=15*mm,
