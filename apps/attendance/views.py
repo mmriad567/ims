@@ -5,7 +5,7 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 from io import BytesIO
 
-from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf
+from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf, add_signature_block
 from apps.core.decorators import role_required
 from apps.academics.models import Subject
 from .models import ClassSession, Attendance
@@ -124,7 +124,7 @@ def my_attendance_pdf(request, subject_id):
 
     buffer = BytesIO()
     story = get_base_pdf_story(
-        "Bangladesh Polytechnic Institute",
+        "Magura Polytechnic Institute",
         [
             f"Attendance Report: {subject.code} - {subject.name}",
             f"Student: {student.user.full_name} | Roll: {student.roll_no}",
@@ -137,6 +137,7 @@ def my_attendance_pdf(request, subject_id):
         table_data.append([str(att.session.date), str(att.session.period_no), att.get_status_display()])
 
     story.append(get_styled_table(table_data))
+    add_signature_block(story)
     add_footer_to_story(story)
     build_pdf(buffer, story)
 

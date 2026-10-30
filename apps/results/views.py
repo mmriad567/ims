@@ -5,7 +5,7 @@ from django import forms
 from django.http import HttpResponse
 from io import BytesIO
 
-from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf
+from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf, add_signature_block
 from apps.core.decorators import role_required
 from apps.academics.models import Subject
 from apps.accounts.models import StudentProfile
@@ -115,7 +115,7 @@ def my_result_pdf(request):
 
     buffer = BytesIO()
     story = get_base_pdf_story(
-        "Bangladesh Polytechnic Institute",
+        "Magura Polytechnic Institute",
         [
             "Overall Result Transcript",
             f"Student: {student.user.full_name} | Roll: {student.roll_no}",
@@ -130,6 +130,7 @@ def my_result_pdf(request):
         table_data.append([subj_res['subject'].code, subj_res['subject'].name, str(gpa), status])
 
     story.append(get_styled_table(table_data))
+    add_signature_block(story, label1="Class Teacher", label2="Controller of Exams")
     add_footer_to_story(story)
     build_pdf(buffer, story)
 
