@@ -46,22 +46,6 @@ def get_styled_table(data, col_widths=None):
     return table
 
 
-def add_signature_block(story, label1="Class Teacher", label2="Principal"):
-    """Append a two-column signature line at the bottom of the PDF."""
-    story.append(Spacer(1, 40))
-    sig_data = [
-        ["_______________________", "_______________________"],
-        [label1, label2]
-    ]
-    sig_table = Table(sig_data, colWidths=[80*mm, 80*mm])
-    sig_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.darkgrey),
-    ]))
-    story.append(sig_table)
-
-
 def add_footer_to_story(story):
     """Append generation timestamp to the PDF story."""
     styles = get_pdf_styles()
@@ -70,11 +54,29 @@ def add_footer_to_story(story):
     story.append(Paragraph(f"Generated on {timestamp}", styles['footer']))
 
 
-def build_pdf(buffer, story):
-    """Build the PDF into the given BytesIO buffer."""
+def build_pdf(buffer, story, signature_labels=None):
+    """Build the PDF and optionally draw signatures at the bottom of every page."""
     doc = SimpleDocTemplate(
         buffer, pagesize=A4,
         leftMargin=15*mm, rightMargin=15*mm,
-        topMargin=20*mm, bottomMargin=20*mm
+        topMargin=20*mm, bottomMargin=35*mm
     )
-    doc.build(story)
+
+    def draw_page_footer(canvas, doc):
+        """Draw the generation timestamp and optional signature lines on each page."""
+        canvas.saveState()
+        timestamp = datetime.now().strftime('%d %B %Y, %I:%M %p')
+        canvas.setFont('Helvetica-Oblique', 8)
+        canvas.setFillColor(colors.grey)
+        canvas.drawCentredString(A4[0]/2.0, 15*mm, f"Generated on {timestamp}")
+
+        if signature_labels:
+            canvas.setFont('Helvetica', 10)
+            canvas.setFillColor(colors.black)
+            canvas.line(25*mm, 30*mm, 75*mm, 30*mm)
+            canvas.drawCentredString(50*mm, 25*mm, signature_labels[0])
+            canvas.line(135*mm, 30*mm, 185*mm, 30*mm)
+            canvas.drawCentredString(160*mm, 25*mm, signature_labels[1])
+        canvas.restoreState()
+
+    doc.build(story, onFirstPage=draw_page_footer, onLaterPages=draw_page_footer)

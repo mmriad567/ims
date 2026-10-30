@@ -5,7 +5,8 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 from io import BytesIO
 
-from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf, add_signature_block
+from reportlab.lib.units import mm
+from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, build_pdf
 from apps.core.decorators import role_required
 from apps.academics.models import Subject
 from .models import ClassSession, Attendance
@@ -134,12 +135,10 @@ def my_attendance_pdf(request, subject_id):
 
     table_data = [["Date", "Period", "Status"]]
     for att in attendances:
-        table_data.append([str(att.session.date), str(att.session.period_no), att.get_status_display()])
+        table_data.append([str(att.session.date), f"Period {att.session.period_no}", att.get_status_display().upper()])
 
-    story.append(get_styled_table(table_data))
-    add_signature_block(story)
-    add_footer_to_story(story)
-    build_pdf(buffer, story)
+    story.append(get_styled_table(table_data, col_widths=[60*mm, 60*mm, 60*mm]))
+    build_pdf(buffer, story, signature_labels=("Class Teacher", "Principal"))
 
     pdf = buffer.getvalue()
     buffer.close()

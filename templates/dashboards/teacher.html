@@ -5,11 +5,12 @@
 {% block content %}
 <h1 class="text-2xl font-bold mb-4">Teacher Dashboard</h1>
 <p class="mb-4">Welcome, {{ request.user.full_name }}</p>
-<div class="bg-white p-6 rounded shadow mb-4">
-    <a href="{% url 'attendance:subject_list' %}" class="text-blue-600 underline font-semibold">My Subjects / Take Attendance</a>
-</div>
-<div class="bg-white p-6 rounded shadow mb-4">Attendance module coming in P5</div>
-<div class="bg-white p-6 rounded shadow">
-    <a href="{% url 'results:exam_list' %}" class="text-blue-600 underline font-semibold">Enter Marks</a>
-</div>
+<a href="{% url 'attendance:subject_list' %}" class="block p-4 bg-white rounded shadow hover:shadow-lg transition border-l-4 border-blue-500 mb-4">
+    <h3 class="text-lg font-bold text-gray-800">My Subjects</h3>
+    <p class="text-gray-600">Manage your subjects and take attendance.</p>
+</a>
+<a href="{% url 'results:exam_list' %}" class="block p-4 bg-white rounded shadow hover:shadow-lg transition border-l-4 border-green-500 mb-4">
+    <h3 class="text-lg font-bold text-gray-800">Enter Marks</h3>
+    <p class="text-gray-600">Enter and update exam marks.</p>
+</a>
 {% endblock %}

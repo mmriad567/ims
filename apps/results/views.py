@@ -3,9 +3,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.forms import modelformset_factory
 from django import forms
 from django.http import HttpResponse
+from django.contrib import messages
 from io import BytesIO
 
-from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, add_footer_to_story, build_pdf, add_signature_block
+from apps.core.pdf_utils import get_base_pdf_story, get_styled_table, build_pdf
 from apps.core.decorators import role_required
 from apps.academics.models import Subject
 from apps.accounts.models import StudentProfile
@@ -71,6 +72,7 @@ def exam_marks_edit(request, exam_id):
         formset = MarkFormSet(request.POST, queryset=queryset)
         if formset.is_valid():
             formset.save()
+            messages.success(request, "Marks updated successfully!")
             return redirect('results:exam_marks_edit', exam_id=exam.id)
     else:
         formset = MarkFormSet(queryset=queryset)
@@ -130,9 +132,7 @@ def my_result_pdf(request):
         table_data.append([subj_res['subject'].code, subj_res['subject'].name, str(gpa), status])
 
     story.append(get_styled_table(table_data))
-    add_signature_block(story, label1="Class Teacher", label2="Controller of Exams")
-    add_footer_to_story(story)
-    build_pdf(buffer, story)
+    build_pdf(buffer, story, signature_labels=("Class Teacher", "Controller of Exams"))
 
     pdf = buffer.getvalue()
     buffer.close()
