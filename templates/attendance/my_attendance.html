@@ -1,47 +1,51 @@
 {% extends "base.html" %}
 
 {% block title %}My Attendance{% endblock %}
-{% block page_title %}My Attendance{% endblock %}
 
 {% block content %}
-<div class="mb-6">
-    <h1 class="text-2xl font-bold text-slate-800">My Attendance</h1>
-    <p class="text-slate-500 mt-1">{{ student.roll_no }} — {{ student.user.full_name }}</p>
-</div>
-<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-    <table class="w-full table-auto">
-        <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-            <tr>
-                <th class="px-6 py-3 text-left">Subject Code</th>
-                <th class="px-6 py-3 text-left">Subject Name</th>
-                <th class="px-6 py-3 text-left">Total</th>
-                <th class="px-6 py-3 text-left">Present</th>
-                <th class="px-6 py-3 text-left">Late</th>
-                <th class="px-6 py-3 text-left">Absent</th>
-                <th class="px-6 py-3 text-left">Percentage</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-            {% for summary in summaries %}
-            <tr class="hover:bg-slate-50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><a href="{% url 'attendance:my_attendance_detail' summary.subject.id %}" class="text-blue-600 hover:underline">{{ summary.subject.code }}</a></td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.subject.name }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.total }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.present }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.late }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{{ summary.absent }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    {% if summary.percentage >= 75 %}
-                        <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full text-xs font-medium">{{ summary.percentage }}%</span>
-                    {% elif summary.percentage >= 60 %}
-                        <span class="bg-yellow-100 text-yellow-800 px-2.5 py-0.5 rounded-full text-xs font-medium">{{ summary.percentage }}%</span>
-                    {% else %}
-                        <span class="bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full text-xs font-medium">{{ summary.percentage }}%</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="max-w-5xl mx-auto">
+    <div class="mb-6">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">My Attendance</h1>
+        <p class="text-slate-500 mt-1">{{ student.roll_no }} — {{ student.user.full_name }}</p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-6">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                <tr>
+                    <th class="px-6 py-4">Subject Code</th>
+                    <th class="px-6 py-4">Subject Name</th>
+                    <th class="px-6 py-4">Total</th>
+                    <th class="px-6 py-4">Present</th>
+                    <th class="px-6 py-4">Late</th>
+                    <th class="px-6 py-4">Absent</th>
+                    <th class="px-6 py-4">Percentage</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for summary in summaries %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 text-sm font-bold">
+                        <a href="{% url 'attendance:my_attendance_detail' summary.subject.id %}" class="text-orange-600 hover:underline">{{ summary.subject.code }}</a>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ summary.subject.name }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ summary.total }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ summary.present }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ summary.late }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ summary.absent }}</td>
+                    <td class="px-6 py-4 text-sm">
+                        {% if summary.percentage >= 75 %}
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">{{ summary.percentage }}%</span>
+                        {% elif summary.percentage >= 60 %}
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">{{ summary.percentage }}%</span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">{{ summary.percentage }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

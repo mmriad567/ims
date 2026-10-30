@@ -27,15 +27,30 @@
                 </div>
 
                 <div class="hidden md:flex space-x-1">
-                    <a href="/" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">Dashboard</a>
+                    <a href="/" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors
+                        {% if request.resolver_match.url_name == 'dashboard' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600 hover:bg-orange-50{% endif %}">
+                        Dashboard
+                    </a>
                     {% if request.user.role == 'teacher' %}
-                        <a href="{% url 'attendance:subject_list' %}" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">Subjects</a>
-                        <a href="{% url 'results:exam_list' %}" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">Marks</a>
+                        <a href="{% url 'attendance:subject_list' %}" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors
+                            {% if request.resolver_match.url_name == 'subject_list' or request.resolver_match.url_name == 'session_create' or request.resolver_match.url_name == 'take' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600 hover:bg-orange-50{% endif %}">
+                            Subjects
+                        </a>
+                        <a href="{% url 'results:exam_list' %}" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors
+                            {% if request.resolver_match.url_name == 'exam_list' or request.resolver_match.url_name == 'exam_marks_edit' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600 hover:bg-orange-50{% endif %}">
+                            Marks
+                        </a>
                     {% elif request.user.role == 'student' %}
-                        <a href="{% url 'attendance:my_attendance' %}" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">Attendance</a>
-                        <a href="{% url 'results:my_result' %}" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">Results</a>
+                        <a href="{% url 'attendance:my_attendance' %}" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors
+                            {% if request.resolver_match.url_name == 'my_attendance' or request.resolver_match.url_name == 'my_attendance_detail' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600 hover:bg-orange-50{% endif %}">
+                            Attendance
+                        </a>
+                        <a href="{% url 'results:my_result' %}" class="px-4 py-2 rounded-lg text-sm font-bold transition-colors
+                            {% if request.resolver_match.url_name == 'my_result' or request.resolver_match.url_name == 'my_result_detail' %}text-orange-600 bg-orange-50{% else %}text-slate-600 hover:text-orange-600 hover:bg-orange-50{% endif %}">
+                            Results
+                        </a>
                     {% elif request.user.role == 'admin' %}
-                        <a href="/admin/" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">Django Admin</a>
+                        <a href="/admin/" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors">Django Admin</a>
                     {% endif %}
                 </div>
 

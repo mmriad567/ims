@@ -3,49 +3,69 @@
 {% block title %}Result Detail - {{ subject.code }}{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">{{ subject.code }}: {{ subject.name }} — Result Detail</h1>
+<div class="max-w-5xl mx-auto">
+    <div class="mb-6">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ subject.code }}: {{ subject.name }}</h1>
+        <p class="text-slate-500 mt-1">Exam-wise marks and GPA for this subject.</p>
+    </div>
 
-<div class="bg-white p-6 rounded shadow mb-4">
-    <p class="text-sm uppercase tracking-wide text-gray-600">Subject GPA</p>
-    {% if result.gpa is not None %}
-    <p class="text-3xl font-bold {% if result.has_fail %}text-red-600{% else %}text-green-600{% endif %}">{{ result.gpa }}</p>
-    <p class="text-gray-700">{% if result.has_fail %}Fail grade present{% else %}Passed{% endif %}</p>
-    {% else %}
-    <p class="text-gray-600">No grades published yet</p>
-    {% endif %}
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+        <p class="text-xs uppercase tracking-wider font-bold text-slate-500">Subject GPA</p>
+        {% if result.gpa is not None %}
+            <div class="flex items-center gap-3 mt-2">
+                <p class="text-4xl font-extrabold {% if result.has_fail %}text-rose-600{% else %}text-emerald-600{% endif %}">{{ result.gpa }}</p>
+                {% if result.has_fail %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">Failed</span>
+                {% else %}
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Passed</span>
+                {% endif %}
+            </div>
+        {% else %}
+            <p class="text-slate-500 mt-2">No grades published yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mt-6">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-bold">
+                <tr>
+                    <th class="px-6 py-4">Exam Name</th>
+                    <th class="px-6 py-4">Date</th>
+                    <th class="px-6 py-4">Obtained</th>
+                    <th class="px-6 py-4">Total</th>
+                    <th class="px-6 py-4">Percentage</th>
+                    <th class="px-6 py-4">Grade</th>
+                    <th class="px-6 py-4">Grade Point</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for row in result.exams %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-800">{{ row.exam.name }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ row.exam.date|date:"Y-m-d" }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ row.obtained }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ row.total }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ row.percentage }}%</td>
+                    <td class="px-6 py-4 text-sm">
+                        {% if row.grade == 'F' %}
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">{{ row.grade }}</span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">{{ row.grade }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-700">{{ row.grade_point }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td class="px-6 py-4 text-sm text-slate-500" colspan="7">No exams graded yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="mt-6">
+        <a href="{% url 'results:my_result' %}" class="text-orange-600 font-semibold hover:underline">Back to My Result</a>
+    </p>
 </div>
-
-<table class="table-auto w-full bg-white rounded shadow">
-    <thead class="bg-gray-200">
-        <tr>
-            <th class="px-4 py-2 text-left">Exam Name</th>
-            <th class="px-4 py-2 text-left">Date</th>
-            <th class="px-4 py-2 text-left">Obtained</th>
-            <th class="px-4 py-2 text-left">Total</th>
-            <th class="px-4 py-2 text-left">Percentage</th>
-            <th class="px-4 py-2 text-left">Grade</th>
-            <th class="px-4 py-2 text-left">Grade Point</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for row in result.exams %}
-        <tr class="border-t">
-            <td class="px-4 py-2">{{ row.exam.name }}</td>
-            <td class="px-4 py-2">{{ row.exam.date|date:"Y-m-d" }}</td>
-            <td class="px-4 py-2">{{ row.obtained }}</td>
-            <td class="px-4 py-2">{{ row.total }}</td>
-            <td class="px-4 py-2">{{ row.percentage }}%</td>
-            <td class="px-4 py-2">{{ row.grade }}</td>
-            <td class="px-4 py-2">{{ row.grade_point }}</td>
-        </tr>
-        {% empty %}
-        <tr class="border-t">
-            <td class="px-4 py-2 text-gray-600" colspan="7">No exams graded yet.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<p class="mt-4">
-    <a href="{% url 'results:my_result' %}" class="text-blue-600 underline">Back to My Result</a>
-</p>
 {% endblock %}
