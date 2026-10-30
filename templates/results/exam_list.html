@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}My Exams{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">My Exams</h1>
+{% if exams %}
+<table class="table-auto w-full bg-white rounded shadow">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="px-4 py-2 text-left">Date</th>
+            <th class="px-4 py-2 text-left">Exam</th>
+            <th class="px-4 py-2 text-left">Subject</th>
+            <th class="px-4 py-2 text-left">Section</th>
+            <th class="px-4 py-2 text-left">Total Marks</th>
+            <th class="px-4 py-2 text-left">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for exam in exams %}
+        <tr class="border-t">
+            <td class="px-4 py-2">{{ exam.date|date:"Y-m-d" }}</td>
+            <td class="px-4 py-2">{{ exam.name }}</td>
+            <td class="px-4 py-2">{{ exam.subject.code }}: {{ exam.subject.name }}</td>
+            <td class="px-4 py-2">{{ exam.section }}</td>
+            <td class="px-4 py-2">{{ exam.total_marks }}</td>
+            <td class="px-4 py-2">
+                <a href="{% url 'results:exam_marks_edit' exam.id %}" class="bg-blue-600 text-white px-3 py-1 rounded text-sm">Edit Marks</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="bg-white p-6 rounded shadow">No exams created yet. Contact admin.</p>
+{% endif %}
+{% endblock %}

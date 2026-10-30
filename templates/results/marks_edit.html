@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Marks - {{ exam.name }}{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-2">Marks — {{ exam.name }}</h1>
+<p class="mb-4 text-gray-700">{{ exam.subject.code }}: {{ exam.subject.name }} | {{ exam.section }} | Total: {{ exam.total_marks }}</p>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {{ formset.non_form_errors }}
+    <table class="table-auto w-full bg-white rounded shadow mb-4">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-4 py-2 text-left">Roll</th>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="px-4 py-2 text-left">Marks</th>
+                <th class="px-4 py-2 text-left">Absent</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for form, mark in paired %}
+            <tr class="border-t">
+                <td class="px-4 py-2">{{ mark.student.roll_no }}</td>
+                <td class="px-4 py-2">{{ mark.student.user.full_name }}</td>
+                <td class="px-4 py-2">{{ form.marks_obtained }} {{ form.id }} {{ form.marks_obtained.errors }}</td>
+                <td class="px-4 py-2">{{ form.is_absent }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Save All Marks</button>
+</form>
+<p class="mt-4">
+    <a href="{% url 'results:exam_list' %}" class="text-blue-600 underline">Back to My Exams</a>
+</p>
+{% endblock %}

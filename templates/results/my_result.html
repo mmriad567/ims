@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}My Result{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-2">My Result</h1>
+<p class="mb-4 text-gray-700">{{ student.roll_no }} — {{ student.user.full_name }}</p>
+
+{% if result.has_fail %}
+<div class="bg-red-600 text-white p-4 rounded shadow mb-4">
+    You have a fail grade in one or more subjects
+</div>
+{% endif %}
+
+{% if result.overall_gpa is None %}
+<div class="bg-white p-6 rounded shadow mb-4">
+    <p class="text-gray-600">No grades published yet</p>
+</div>
+{% else %}
+<div class="p-6 rounded shadow mb-4 text-white {% if result.has_fail or result.overall_gpa < 2.5 %}bg-red-600{% elif result.overall_gpa >= 3.5 %}bg-green-600{% else %}bg-yellow-500{% endif %}">
+    <p class="text-sm uppercase tracking-wide">Overall GPA</p>
+    <p class="text-5xl font-bold">{{ result.overall_gpa }}</p>
+</div>
+{% endif %}
+
+<table class="table-auto w-full bg-white rounded shadow">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="px-4 py-2 text-left">Subject Code</th>
+            <th class="px-4 py-2 text-left">Subject Name</th>
+            <th class="px-4 py-2 text-left">Exams Graded</th>
+            <th class="px-4 py-2 text-left">Subject GPA</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subj in result.subjects %}
+        <tr class="border-t">
+            <td class="px-4 py-2">
+                <a href="{% url 'results:my_result_detail' subj.subject.id %}" class="text-blue-600 underline">{{ subj.subject.code }}</a>
+            </td>
+            <td class="px-4 py-2">{{ subj.subject.name }}</td>
+            <td class="px-4 py-2">{{ subj.exams|length }}</td>
+            <td class="px-4 py-2">{% if subj.gpa is not None %}{{ subj.gpa }}{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

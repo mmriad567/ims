@@ -9,5 +9,7 @@
     <a href="{% url 'attendance:my_attendance' %}" class="text-blue-600 underline font-semibold">View My Attendance</a>
 </div>
 <div class="bg-white p-6 rounded shadow mb-4">Your attendance will show here (P5)</div>
-<div class="bg-white p-6 rounded shadow">Your results will show here (P6)</div>
+<div class="bg-white p-6 rounded shadow">
+    <a href="{% url 'results:my_result' %}" class="text-blue-600 underline font-semibold">View My Result</a>
+</div>
 {% endblock %}

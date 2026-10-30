@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Result Detail - {{ subject.code }}{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">{{ subject.code }}: {{ subject.name }} — Result Detail</h1>
+
+<div class="bg-white p-6 rounded shadow mb-4">
+    <p class="text-sm uppercase tracking-wide text-gray-600">Subject GPA</p>
+    {% if result.gpa is not None %}
+    <p class="text-3xl font-bold {% if result.has_fail %}text-red-600{% else %}text-green-600{% endif %}">{{ result.gpa }}</p>
+    <p class="text-gray-700">{% if result.has_fail %}Fail grade present{% else %}Passed{% endif %}</p>
+    {% else %}
+    <p class="text-gray-600">No grades published yet</p>
+    {% endif %}
+</div>
+
+<table class="table-auto w-full bg-white rounded shadow">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="px-4 py-2 text-left">Exam Name</th>
+            <th class="px-4 py-2 text-left">Date</th>
+            <th class="px-4 py-2 text-left">Obtained</th>
+            <th class="px-4 py-2 text-left">Total</th>
+            <th class="px-4 py-2 text-left">Percentage</th>
+            <th class="px-4 py-2 text-left">Grade</th>
+            <th class="px-4 py-2 text-left">Grade Point</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in result.exams %}
+        <tr class="border-t">
+            <td class="px-4 py-2">{{ row.exam.name }}</td>
+            <td class="px-4 py-2">{{ row.exam.date|date:"Y-m-d" }}</td>
+            <td class="px-4 py-2">{{ row.obtained }}</td>
+            <td class="px-4 py-2">{{ row.total }}</td>
+            <td class="px-4 py-2">{{ row.percentage }}%</td>
+            <td class="px-4 py-2">{{ row.grade }}</td>
+            <td class="px-4 py-2">{{ row.grade_point }}</td>
+        </tr>
+        {% empty %}
+        <tr class="border-t">
+            <td class="px-4 py-2 text-gray-600" colspan="7">No exams graded yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p class="mt-4">
+    <a href="{% url 'results:my_result' %}" class="text-blue-600 underline">Back to My Result</a>
+</p>
+{% endblock %}
